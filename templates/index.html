@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AvatART</title>
+    <meta name="description" content="Create your Avatar with AI">
+    <meta name="keywords" content="keywords,here">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+      integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Denk+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jolly+Lodger&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/tailwindcss@1.9.0/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+  </head>
+  <body class="bg-indigo-800 leading-normal tracking-normal halloween-bg">
+    <!--Container-->
+    <div class="container sm:w-full md:w-9/12 lg:w-8/12 mx-auto pt-20">
+      <div class="w-full p-3 mb-8 text-gray-100 leading-normal">
+	<a href="/"><h1>âVatÂrt<br><span>message</span></h1></a>
+	
+	<div class="flex flex-wrap justify-center pt-20 errors" id="errors"></div>
+        <form method="POST" enctype="multipart/form-data" id="upload_form">
+          <!--Console Content-->
+          <div class="flex flex-wrap justify-center pt-3">
+            <div class="w-full p-3">
+              <!--Template Card-->
+              <div class="flex w-full p-3 items-center justify-center bg-grey-lighter" id="videoform">
+                <label
+                  class="w-64 flex flex-col items-center px-4 py-6 bg-indigo-800 text-indigo-300 rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-gray-200">
+                <i class="fa fa-video text-4xl"></i>
+                <span class="mt-2 text-base leading-normal text-2xl">Record your message</span>
+                <input type="file" name="file" accept="video/*" capture="camera" id="camera" class="hidden">
+                </label>
+              </div>
+              <!--/Template Card-->
+            </div>
+            <div class="text-center relative w-full h-20">
+              <svg class="arrows">
+                <path class="a1" d="M0 0 L30 32 L60 0"></path>
+                <path class="a2" d="M0 20 L30 52 L60 20"></path>
+                <path class="a3" d="M0 40 L30 72 L60 40"></path>
+              </svg>
+            </div>
+            <div class="text-center">
+              <p>And choose a style:</p>
+            </div>
+            <div id="styles" class="w-full flex flex-row flex-wrap justify-center flex-grow mt-2 styles-section">
+              <!--Template Card if picture loaded-->
+              <div class="w-1/3 lg:w-1/4 xl:w-1/5 p-3" id="stylebox1">
+                <!--Template Card-->
+                <div class="bg-indigo-900 border-indigo-700 rounded shadow">
+                  <div class="p-1">
+                    <img src="/static/khalafs/out_3-20.png" onclick="process(1);" alt="Style">
+                  </div>
+                </div>
+                <!--/Template Card-->
+              </div>
+              <div class="w-1/3 lg:w-1/4 xl:w-1/5 p-3" id="stylebox2">
+                <!--Template Card-->
+                <div class="bg-indigo-900 border-indigo-700 rounded shadow">
+                  <div class="p-1">
+                    <img src="/static/khalafs/out_3-15.png" onclick="process(2);" alt="Style">
+                  </div>
+                </div>
+                <!--/Template Card-->
+              </div>
+              <div class="w-1/3 lg:w-1/4 xl:w-1/5 p-3" id="stylebox3">
+                <!--Template Card-->
+                <div class="bg-indigo-900 border-indigo-700 rounded shadow">
+                  <div class="p-1">
+                    <img src="/static/khalafs/out_3-7.png" onclick="process(3);" alt="Style">
+                  </div>
+                </div>
+                <!--/Template Card-->
+              </div>
+              <!--/Template Card-->
+            </div>
+            <div class="w-full flex flex-row flex-wrap justify-center flex-grow mt-2 hidden" id="result">
+              <!--Template Card if picture loaded-->
+              <div class="p-3">
+                <!--Template Card-->
+                <div class="bg-indigo-900 border-indigo-800 rounded shadow">
+                  <div class="border-b border-indigo-700 p-3">
+                    <h5 class="font-bold uppercase text-gray-500">Result</h5>
+                  </div>
+                  <div class="p-2 lg:p-5">
+                    <video poster="/static/loading.svg" id="processed">
+                  </div>
+                </div>
+                <!--/Template Card-->
+              </div>
+              <div class="w-1/2 p-3 hidden">
+                <!--Template Card-->
+                <div class="bg-indigo-900 border-indigo-800 rounded shadow">
+                  <div class="border-b border-indigo-700 p-3">
+                    <h5 class="font-bold uppercase text-gray-500">Original</h5>
+                  </div>
+                  <div class="p-2 lg:p-5">
+                    <video poster="https://placehold.it/800x800" id="original">
+                  </div>
+                </div>
+                <!--/Template Card-->
+              </div>
+              <!--/Template Card-->
+            </div>
+            <input type="hidden" name="style" value="0" id="style">
+            <input type="hidden" name="uid" value="" id="uid">
+	    <input type="hidden" name="ext" value="" id="ext">
+            <!-- controls if needed -->
+            <!--div class="flex items-center justify-center">
+              <div class="p-2">
+                  <div class="rounded-full h-12 w-12 p-3 bg-green-600 flex items-center justify-center">
+                      <i  class="fa fa-microphone-alt text-2xl fa-fw fa-inverse"></i>
+                  </div>
+              </div>
+              <div class="p-2">
+                  <div class="rounded-full h-16 w-16 p-3 bg-red-600 flex items-center justify-center">
+                      <i  class="fa fa-camera fa-2x fa-fw fa-inverse"></i>
+                  </div>
+              </div>
+              <div class="p-2">
+                  <div class="rounded-full h-12 w-12 p-3 bg-green-600 flex items-center justify-center">
+                      <i  class="fa fa-expand text-2xl fa-fw fa-inverse"></i>
+                  </div>
+              </div>
+              </div -->
+            <!-- /controls if needed -->
+          </div>
+        </form>
+
+	<div class="mt-5 mb-5 text-center hidden" id="downloaddiv">
+          <a href="#" download id="downloadlink">
+            <button class="bg-indigo-500 hover:bg-indigo-400 text-white font-bold py-2 px-4 border-b-4 border-indigo-700 hover:border-indigo-500 rounded inline-flex items-center">
+              <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+              <span>Download</span>
+            </button>
+	  </a>
+	</div>
+
+        <!--Social btns-->
+	<div class="hidden" id="social">
+          <div class="mt-5 mb-5 text-center">
+            <p>Share this on:</p>
+          </div>
+          <div class="social-btns hidden">
+            <a class="btn twitter" href="#">
+            <i class="fab fa-twitter text-purple-900"></i>
+            </a>
+            <a class="btn instagram" href="#">
+            <i class="fab fa-instagram text-purple-900"></i>
+            </a>
+          </div>
+	</div>
+        <!--/Social btns-->
+        <!--Divider-->
+        <hr class="border-b-2 border-gray-400 my-8 mx-4">
+        <div class="flex flex-row flex-wrap flex-grow mt-2">
+          <div class="w-full p-3">
+            <!--Table Card-->
+            <div class="bg-gray-800 border rounded shadow">
+              <div class="border-b p-3">
+                <h5 class="font-bold uppercase text-gray-500">Instructions</h5>
+              </div>
+              <div class="p-5 text-center">
+                <div class="text-formatted text-gray-600 flex flex-col items-center justify-center">
+                  <p class="pb-3">Follow these easy steps to get a great result</p>
+                  <p class="instructions text-orange-600">Try to look directly to the camera</p>
+                  <p class="instructions text-orange-600">Try not to make sudden movements and don't move/turn your head so much while recording specially in the first second</p>
+                  <p class="instructions text-orange-600">One face by video is allowed</p>
+                  <p class="instructions text-orange-600">Record a video of maximum 10 seconds</p>
+                </div>
+              </div>
+            </div>
+            <!--/table Card-->
+          </div>
+        </div>
+        <!--/ Console Content-->
+      </div>
+    </div>
+    <!--/container-->
+    <footer class="bg-gray-900 border-t border-gray-400 shadow">
+      <div class="container max-w-md mx-auto flex py-8">
+        <div class="w-full mx-auto flex flex-wrap">
+          <div class="flex w-full md:w-1/2 ">
+            <div class="px-4">
+              <h3 class="font-bold font-bold text-gray-500">About AvatART</h3>
+              <p class="py-4 text-gray-600">
+                For more information please <a class="text-orange-600" href="mailto:info@metodica.es?subject=Mail from AvatArt halloweeen">contact us</a>
+              </p>
+              </p>
+            </div>
+          </div>
+          <div class="flex w-full md:w-1/2">
+            <div class="px-4">
+              <h3 class="font-bold font-bold text-gray-500">Social</h3>
+              <ul class="list-reset items-center pt-3">
+                <li>
+                  <a class="inline-block text-gray-600 no-underline hover:text-gray-100 hover:text-underline py-1"
+                    href="https://twitter.com/avatartapp" target="_blank">
+                  <i class="fab fa-twitter text-orange-600 pr-3"></i> Twitter
+                  </a>
+                </li>
+                <li>
+                  <a class="inline-block text-gray-600 no-underline hover:text-gray-100 hover:text-underline py-1"
+                    href="https://www.instagram.com/avatart.app/" target="_blank">
+                  <i class="fab fa-instagram text-orange-600 pr-3"></i> Instagram
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!--<script src="/static/script.js"></script>-->
+    <script src="/static/jquery-3.5.1.min.js"></script>
+    <script>
+      $(document).ready(function(){
+	$('#camera').bind('change', function() {
+	  console.log("CAMERA CHANGE");
+	  $('#videoform').addClass("hidden");
+	  var file = this.files[0];
+	  if (checkFileSize(file)) {
+	    $("#original").src = URL.createObjectURL(file);
+            $("#original").controls = true;
+	  }
+	});
+        
+	var error_text = getParameterByName('error');
+        if (error_text != null && error_text != "") {
+	  $("#errors").html(error_text);
+	  $("#errors").removeClass("hidden");
+	}
+
+	var file_ext = getParameterByName('ext');
+        if (file_ext != null && file_ext != "") {
+	  $("#ext").val(file_ext)
+	}
+	
+        var task_uuid = getParameterByName('uid');
+        if (task_uuid != null && task_uuid != "") {
+	  $("#uid").val(task_uuid)
+	  $("#ext").val(file_ext)
+	  $("#result").removeClass("hidden");
+	  $("#videoform").addClass("hidden");
+          window.location.hash = "styles";
+
+          var task_style = getParameterByName('style');
+
+          // Listen for finished process
+          if (task_style != null) {
+            $("#stylebox"+task_style).addClass("active");
+            var firstTimeoutResponse = (new Date).getTime();
+            poll();
+	  }
+        }
+
+	function poll () {
+          $.get({
+            url: '/check_upload/'+task_uuid+'/'+task_style,
+             success: function (data) {
+               console.log(data)
+	       var ok = data.check;
+	       var error = data.error;
+               if (ok) {
+		$('#processed').attr('src', '/static/processed/'+task_uuid+'_'+task_style+'.mp4');
+                $("#downloaddiv").removeClass("hidden");
+                $("#downloadlink").attr('href', '/static/processed/'+task_uuid+'_'+task_style+'.mp4');
+                $("#processed").attr('controls', 'controls');
+                $('#processed').each(this.play());
+                $("#social").removeClass("hidden");
+              } else {
+		if (error) {
+		  showError(error);
+		  return;
+		}
+
+		if ((new Date).getTime() - firstTimeoutResponse < 120000) {
+		  console.log("Repeat check");
+                  setTimeout(poll, 1000);
+	        }
+		else {
+		  showError("Process timeout, plese re-click on the style you want to try again");
+		}
+              }
+              
+	      if (error) {
+		showError("Process video error");
+              }
+            },
+	    error: function(data) {
+	      if ((new Date).getTime() - firstTimeoutResponse < 120000) {
+	        setTimeout(poll, 1000);
+	      }
+            },
+          timeout: 10000                    // == 10 seconds timeout
+          })
+        }
+
+        function getParameterByName(name, url = window.location.href) {
+          name = name.replace(/[\[\]]/g, '\\$&');'/static/processed/task_uuid_'
+          var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+              results = regex.exec(url);
+          if (!results) return null;
+          if (!results[2]) return '';
+          return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+	function showError(err) {
+	  $("#errors").html('<div class="text-center py-4 lg:px-4"><div class="p-2 bg-red-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex" role="alert"><span class="flex rounded-full bg-red-700 uppercase px-2 py-1 text-xs font-bold mr-3">Alert</span><span class="font-semibold mr-2 text-left flex-auto">' + err + '</span></div></div>');
+          window.location.hash = "#errors";
+	}
+      });
+
+      function checkFileSize(file) {
+	console.log(file.size);
+	if (file.size > 50*1024*1024) {
+	  showError("Video too large, maximum allowed 50Mb");
+	  return false;
+	}
+        return true;
+      }
+
+      function process(style) {
+        console.log("PROCESS SYLE" + style);
+        document.getElementById('style').value = style
+        document.getElementById('upload_form').submit();
+      }
+    </script>
+  </body>
+</html>
