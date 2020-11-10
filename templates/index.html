@@ -60,7 +60,7 @@
                 <!--Template Card-->
                 <div class="bg-indigo-900 border-indigo-700 rounded shadow">
                   <div class="p-1">
-                    <img src="/static/khalafs/out_3-15.png" onclick="process(2);" alt="Style">
+                    <img src="/static/khalafs/out_3-11.png" onclick="process(2);" alt="Style">
                   </div>
                 </div>
                 <!--/Template Card-->
@@ -264,7 +264,8 @@
 	       var ok = data.check;
 	       var error = data.error;
                if (ok) {
-		$('#processed').attr('src', '/static/processed/'+task_uuid+'_'+task_style+'.mp4');
+		$('#processed').attr('poster', 'newvalue');
+		$('#processed').attr('src', '/static/processed/'+task_uuid+'_'+task_style+'.mp4#t=0.1');
                 $("#downloaddiv").removeClass("hidden");
                 $("#downloadlink").attr('href', '/static/processed/'+task_uuid+'_'+task_style+'.mp4');
                 $("#processed").attr('controls', 'controls');

@@ -23,7 +23,7 @@ from MEGATRONIC.gigatronic import gigatronic
 from MEGATRONIC.mask_utils import translate_mask
 from glob import glob
 
-MODEL = "MEGATRONIC/gigatronic-drawings-finetuned-v0.pt"
+MODEL = "MEGATRONIC/gigatronic-drawings-v1-finetuned.pt"
 MASK_MODEL = "MEGATRONIC/megamask_v2-v0.pt"
 STYLES = glob("used_styles/*")
 
@@ -115,6 +115,7 @@ class ImagesWatcher:
                 time.sleep(0.2)
         except KeyboardInterrupt:
             self.stop()
+            print("SUPER WARNING!!! IT STOPPED!!!!")
 
     def start(self):
         self.__schedule()
@@ -144,6 +145,7 @@ class ImagesEventHandler(RegexMatchingEventHandler):
         self.process(event)
 
     def process(self, event):
+        print ("START PROCESS")
         filename, ext = os.path.splitext(event.src_path)
         print ("Filename created: ", filename, ext);
         
@@ -164,7 +166,16 @@ class ImagesEventHandler(RegexMatchingEventHandler):
 
             ## TAKE CARE OF EXIF:
             final_file = './uploads/'+file
-            if not file.endswith('.avi'):
+
+            if file.lower().endswith('.mkv'):
+                print ("MKV NOT SUPPORTED!!!!!!!!!!!!!!!!!!!!!!")
+                json_data = { 'file': filename + ext, 'error': 'MKV not supported'}
+                with open('./errors/'+str(uid)+'.json', 'w') as fp:
+                    json.dump(json_data, fp)
+                return
+
+
+            if not file.lower().endswith('.avi'):
                 final_file = './uploads/'+uid+".avi"
                 print("EXIF PROCESS MP4 TO AVI:", final_file)
                 subprocess.call(['ffmpeg', '-y', '-i', './uploads/'+file, '-an', final_file])
@@ -247,15 +258,23 @@ class ImagesEventHandler(RegexMatchingEventHandler):
             
         except:
             print ("Unexpected error:", sys.exc_info())
-            json_data = { 'file': filename + ext, 'error': 'Unknown'}
-            with open('./errors/'+str(uid)+'.json', 'w') as fp:
-                json.dump(json_data, fp)
-            return
+            try:
+                json_data = { 'file': filename + ext, 'error': 'Unknown'}
+                with open('./errors/'+str(uid)+'.json', 'w') as fp:
+                    json.dump(json_data, fp)
+                return
+            except:
+                print ("Unexpected error:", sys.exc_info())
+                pass
 
         finally:
+            print ("END PROCESS")
             #TODO: UID MAY NOT EXIST
-            shutil.move(filename + ext, "static/processed/"+uid+'_'+style+ext)
-        
+            try:
+                shutil.move(filename + ext, "static/processed/"+uid+'_'+style+ext)
+            except:
+                print ("Unexpected error:", sys.exc_info())
+                pass
 
 ##################################################################
 
