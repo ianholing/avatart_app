@@ -1,4 +1,8 @@
 #!/bin/bash
+docker build -t avatart .
+docker run --name=avatart_processor -v $PWD:/workspace/ avatart:latest
+docker run --name=avatart_processor -v $PWD:/workspace/ avatart:latest ping www.google.es
+docker exec -it avatart_processor /bin/bash
 
 ## WORKING UWSGI VERSION WORKS
 docker run --name=halloween_flask -v $PWD:/workspace/ -v /media/data/tensorplayground/playground/faceEditor/MEGATRONIC\ TETRAMACRO\ K-28/web/uploads:/workspace/uploads/ -v /media/data/tensorplayground/playground/faceEditor/MEGATRONIC\ TETRAMACRO\ K-28/web/processed:/workspace/static/processed/ -v /media/data/tensorplayground/playground/faceEditor/MEGATRONIC\ TETRAMACRO\ K-28/web/tasks:/workspace/tasks/ -v /media/data/tensorplayground/playground/faceEditor/MEGATRONIC\ TETRAMACRO\ K-28/web/errors/:/workspace/errors/ -p 443:443 halloween:latest uwsgi --ini halloween.ini
